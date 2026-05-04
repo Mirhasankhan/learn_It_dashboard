@@ -1,0 +1,34 @@
+import type { Metadata } from "next";
+import { Poppins } from "next/font/google";
+import "./globals.css";
+import ReduxProvider from "@/redux/provider/ReduxProvider";
+import { Toaster } from "@/components/ui/sonner";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
+
+export const metadata: Metadata = {
+  title: "SEFR",
+  description: "JOB MARKETPLACE",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${poppins.className} antialiased`}
+      >
+        <ReduxProvider>
+          {children}
+        </ReduxProvider>
+        <Toaster position="top-right" />
+      </body>
+    </html>
+  );
+}
