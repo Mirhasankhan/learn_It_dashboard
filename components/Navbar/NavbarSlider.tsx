@@ -144,7 +144,7 @@ const NavbarSlider = ({ isOpen, toggleSidebar }: SidebarProps) => {
                 className="w-10 h-10 rounded-md"
                 priority
               />
-              <p className="text-[#101010] text-[26px] font-bold">SEFR</p>
+              <p className="text-[#101010] text-[26px] font-bold">Learn It</p>
             </Link>
           )}
 

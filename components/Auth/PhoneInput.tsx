@@ -10,8 +10,8 @@ type phoneProp = {
 
 const PhoneNumberInput = ({ phone, setPhone }: phoneProp) => {
      const handleChange = (value: string) => {
-    if (!value.startsWith("966")) {
-      setPhone("966");
+    if (!value.startsWith("880")) {
+      setPhone("880");
       return;
     }
     setPhone(value);
@@ -19,7 +19,7 @@ const PhoneNumberInput = ({ phone, setPhone }: phoneProp) => {
   return (
     <div className="flex flex-col items-center">
       <PhoneInput
-        country={"sa"}
+        country={"bd"}
         value={phone}
          disableDropdown
         countryCodeEditable={false}

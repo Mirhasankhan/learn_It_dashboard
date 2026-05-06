@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "SEFR",
+  title: "Learn It",
   description: "JOB MARKETPLACE",
 };
 

@@ -11,7 +11,7 @@ export const useChatSocket = (token: string | null) => {
     if (!token || (globalSocket && globalSocket.readyState === WebSocket.OPEN)) return;
 
     // const ws = new WebSocket(`ws://localhost:4012?x-token=${token}`);
-    const ws = new WebSocket(`wss://api.sefr.sa/socket?x-token=${token}`);
+    const ws = new WebSocket(`ws://72.60.10.234:4012/socket?x-token=${token}`);
     globalSocket = ws;
 
     ws.onopen = () => {     

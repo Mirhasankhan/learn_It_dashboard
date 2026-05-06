@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import TopNavbar from "@/components/Navbar/TopNavbar";
 
 export const metadata: Metadata = {
-    title: "SEFR",
+    title: "Learn It",
     description: "JOB MARKETPLACE",
 };
 

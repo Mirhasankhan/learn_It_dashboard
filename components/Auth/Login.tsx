@@ -84,7 +84,7 @@ export default function Login() {
             </div>
             <button
               onClick={() => handleLogin()}
-              disabled={isLoading || !phone || phone == "966"}
+              disabled={isLoading || !phone || phone == "880"}
               className="disabled:opacity-45 disabled:cursor-default w-full mt-5 bg-bprimary  text-white font-semibold rounded-3xl transition-all duration-500 ease-in-out cursor-pointer px-6 py-4"
             >
               {isLoading ? (
@@ -97,9 +97,10 @@ export default function Login() {
 
           <div className="grow"></div>
 
-          <div className="text-center text-sm cursor-pointer mt-20">
-            <span className="text-[#2D2D2D]">
-              © {new Date().getFullYear()} SEFR. All rights reserved.
+          <div className="text-center text-sm ">
+            <h1 className="mt-4 mb-12">Credentials: +880-1839033505</h1>
+            <span className="text-[#2D2D2D] cursor-pointer ">
+              © {new Date().getFullYear()} Learn It. All rights reserved.
             </span>
             {/* <span className="text-bprimary hover:underline font-semibold ml-3">
               Term & Condition
