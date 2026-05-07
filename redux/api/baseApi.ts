@@ -2,8 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store/store";
 import { JWTDecodeToken } from "@/lib/jwtDecode";
 
-// const baseUrl = "http://72.60.10.234:4012/api/v1";
-const baseUrl = "http://localhost:4012/api/v1";
+const baseUrl = "http://72.60.10.234:4012/api/v1";
+// const baseUrl = "http://localhost:4012/api/v1";
 
 export const baseApi = createApi({
   reducerPath: "api",

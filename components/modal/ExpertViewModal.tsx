@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useGetExpertDetailsQuery } from "@/redux/api/expertApi";
-import { SaudiRiyal } from "lucide-react";
+import { SaudiRiyal, Eye } from "lucide-react";
 
 interface ExpertDetailsModalProps {
   userId: string;
@@ -28,7 +28,7 @@ const ExpertDetailsModal = ({ userId }: ExpertDetailsModalProps) => {
   const { data, isLoading } = useGetExpertDetailsQuery(userId);
 
   const expert = data?.result?.expert;
-  const profile = expert?.ExpertProfile?.[0]; 
+  const profile = expert?.ExpertProfile?.[0];
 
   return (
     <Dialog>
@@ -40,18 +40,18 @@ const ExpertDetailsModal = ({ userId }: ExpertDetailsModalProps) => {
 
       <DialogContent className="sm:max-w-2xl max-h-[680px] overflow-auto bg-white rounded-lg">
         <DialogHeader>
-          <DialogTitle>Expert Details</DialogTitle>
+          <DialogTitle className="text-xl">Expert Details</DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
-          <p>Loading...</p>
+          <p className="text-center py-8 text-gray-500">Loading...</p>
         ) : !expert ? (
-          <p>No data found</p>
+          <p className="text-center py-8 text-gray-500">No data found</p>
         ) : (
-          <div className="flex flex-col gap-2 mt-4">
+          <div className="flex flex-col gap-5">
             {/* Intro Video */}
             {profile?.introVideo && (
-              <div className="w-full h-[300px] rounded-md overflow-hidden bg-black">
+              <div className="w-full h-[280px] rounded-lg overflow-hidden bg-black shadow-sm">
                 <video
                   src={profile.introVideo}
                   controls
@@ -60,63 +60,87 @@ const ExpertDetailsModal = ({ userId }: ExpertDetailsModalProps) => {
               </div>
             )}
 
-            {/* Basic Info */}
-            <div className="flex mt-4 justify-between">
-              <span className="font-medium">Name</span>
-              <span>{expert.userName}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Phone Number</span>
-              <span>{expert.phoneNumber}</span>
+            {/* Basic Info Card */}
+            <div className="bg-linear-to-r from-blue-50 to-transparent rounded-lg p-4 space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Name</span>
+                <span className="font-semibold text-gray-900">
+                  {expert.userName}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Phone</span>
+                <span className="text-gray-900">{expert.phoneNumber}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Rating</span>
+                <span className="font-semibold">
+                  {expert.avgRating} ⭐ ({expert.totalReview})
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Experience</span>
+                <span className="text-gray-900">
+                  {profile?.experience} Years
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Joined</span>
+                <span className="text-gray-900">
+                  {new Date(expert?.createdAt).toLocaleString("en-US", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
             </div>
 
-            <div className="flex justify-between">
-              <span className="font-medium">Rating</span>
-              <span>
-                {expert.avgRating} ⭐ ({expert.totalReview})
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <span className="font-medium">Experience</span>
-              <span>{profile?.experience} Years</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Start Date</span>
-              <span>
-                {new Date(expert?.createdAt).toLocaleString("en-US", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
-
-            {/* About */}
-            <div>
-              <h3 className="font-medium mb-1">About</h3>
-              <p className="text-sm text-gray-600">{profile?.about || "-"}</p>
-            </div>
-            <div>
-              <h3 className="font-medium mb-1">Targeted Industry</h3>
-              <p className="text-sm text-gray-600">
-                {profile?.targetIndustry?.map((t: any) => (
-                  <p key={t}>{t} |</p>
-                ))}
+            {/* About Section */}
+            <div className="space-y-2">
+              <h3 className="font-semibold text-gray-900">About</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {profile?.about || "-"}
               </p>
             </div>
 
-            {/* Experience */}
-            <div>
-              <h3 className="font-medium text-bprimary mb-2">Experience</h3>
+            {/* Targeted Industry */}
+            <div className="space-y-2">
+              <h3 className="font-semibold text-gray-900">Targeted Industry</h3>
+              <div className="flex flex-wrap gap-2">
+                {profile?.targetIndustry?.length ? (
+                  profile.targetIndustry.map((t: any) => (
+                    <span
+                      key={t}
+                      className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
+                    >
+                      {t}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">-</p>
+                )}
+              </div>
+            </div>
+
+            {/* Experience Section */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-900">Experience</h3>
               <div className="space-y-2">
                 {expert.Experience?.length ? (
                   expert.Experience.map((exp: any, idx: number) => (
-                    <div key={idx} className="border rounded p-3">
-                      <p className="font-medium">{exp.title}</p>
-                      <p className="text-sm">{exp.companyName}</p>
-                      <p className="text-xs text-gray-500">{exp.duration}</p>
-                      <p className="text-sm mt-1">{exp.description}</p>
+                    <div
+                      key={idx}
+                      className="border border-gray-200 rounded-lg p-4 hover:border-blue-200 transition-colors"
+                    >
+                      <p className="font-semibold text-gray-900">{exp.title}</p>
+                      <p className="text-sm text-gray-600">{exp.companyName}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {exp.duration}
+                      </p>
+                      <p className="text-sm text-gray-700 mt-2">
+                        {exp.description}
+                      </p>
                     </div>
                   ))
                 ) : (
@@ -125,18 +149,29 @@ const ExpertDetailsModal = ({ userId }: ExpertDetailsModalProps) => {
               </div>
             </div>
 
-            {/* Services */}
-            <div>
-              <h3 className="font-medium text-bprimary mb-2">Services</h3>
+            {/* Services Section */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-900">Services</h3>
               <div className="space-y-2">
                 {expert.Service?.length ? (
                   expert.Service.map((service: any) => (
-                    <div key={service.id} className="border rounded p-3">
-                      <p className="font-medium">{service.serviceName}</p>
-                      <p className="text-sm text-gray-600">{service.about}</p>
-                      <p className="text-sm font-semibold mt-1 flex gap-1 items-center">
-                        <SaudiRiyal size={18}></SaudiRiyal> {service.price}
-                      </p>
+                    <div
+                      key={service.id}
+                      className="border border-gray-200 rounded-lg p-4 hover:border-bprimary transition-colors"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900">
+                            {service.serviceName}
+                          </p>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {service.about}
+                          </p>
+                        </div>
+                        <p className="font-semibold text-bprimary flex gap-1 items-center whitespace-nowrap ml-2">
+                          <SaudiRiyal size={16}></SaudiRiyal> {service.price}
+                        </p>
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -145,22 +180,27 @@ const ExpertDetailsModal = ({ userId }: ExpertDetailsModalProps) => {
               </div>
             </div>
 
-            {/* Availability with start/end */}
-            <div>
-              <h3 className="font-medium text-bprimary mb-2">Availability</h3>
-              <div className="space-y-1 text-sm">
+            {/* Availability Section */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-900">Availability</h3>
+              <div className="space-y-2 text-sm">
                 {expert.Availability?.length ? (
                   expert.Availability.map((day: any, idx: number) => (
-                    <div key={idx}>
-                      <span className="font-medium">
-                        {weekdays[day.dayOfWeek]}:
-                      </span>{" "}
-                      {day.slots.map((slot: any, i: number) => (
-                        <span key={i}>
-                          {slot.startTime} - {slot.endTime}
-                          {i < day.slots.length - 1 ? ", " : ""}
-                        </span>
-                      ))}
+                    <div
+                      key={idx}
+                      className="flex justify-between items-start bg-gray-50 rounded-lg p-3"
+                    >
+                      <span className="font-medium text-gray-900 min-w-24">
+                        {weekdays[day.dayOfWeek]}
+                      </span>
+                      <span className="text-gray-600">
+                        {day.slots.map((slot: any, i: number) => (
+                          <span key={i}>
+                            {slot.startTime} - {slot.endTime}
+                            {i < day.slots.length - 1 ? " | " : ""}
+                          </span>
+                        ))}
+                      </span>
                     </div>
                   ))
                 ) : (
@@ -169,9 +209,9 @@ const ExpertDetailsModal = ({ userId }: ExpertDetailsModalProps) => {
               </div>
             </div>
 
-            {/* Certificates */}
-            <div>
-              <h3 className="font-medium text-bprimary mb-2">Certificates</h3>
+            {/* Certificates Section */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-900">Certificates</h3>
               <div className="flex flex-wrap gap-2">
                 {profile?.certificates?.length ? (
                   profile.certificates.map((certUrl: string, idx: number) => (
@@ -180,8 +220,9 @@ const ExpertDetailsModal = ({ userId }: ExpertDetailsModalProps) => {
                       href={certUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-500 underline text-sm"
+                      className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2"
                     >
+                      <Eye size={16} />
                       Certificate {idx + 1}
                     </a>
                   ))
@@ -193,11 +234,11 @@ const ExpertDetailsModal = ({ userId }: ExpertDetailsModalProps) => {
               </div>
             </div>
 
-            {/* CV */}
+            {/* CV Section */}
             {expert.cvUrl && (
-              <div>
-                <h3 className="font-medium mb-2">CV</h3>
-                <div className="border rounded p-2 h-60 overflow-auto">
+              <div className="space-y-3">
+                <h3 className="font-semibold text-gray-900">CV</h3>
+                <div className="border border-gray-200 rounded-lg p-2 h-60 overflow-auto shadow-sm">
                   <iframe
                     src={expert.cvUrl}
                     className="w-full h-full"
@@ -207,20 +248,26 @@ const ExpertDetailsModal = ({ userId }: ExpertDetailsModalProps) => {
               </div>
             )}
 
-            {/* Metrics */}
-            <div className="pt-3 border-t space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span>Report Submitted</span>
-                <span>{data?.result?.reportCount || 0}</span>
+            {/* Metrics Section */}
+            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+              <h3 className="font-semibold text-gray-900 mb-3">Statistics</h3>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Report Submitted</span>
+                <span className="font-semibold text-gray-900">
+                  {data?.result?.reportCount || 0}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span>Sessions Conducted</span>
-                <span>{expert.sessionConductCount || 0}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Sessions Conducted</span>
+                <span className="font-semibold text-gray-900">
+                  {expert.sessionConductCount || 0}
+                </span>
               </div>
-
-              <div className="flex justify-between">
-                <span>Orders Delivered</span>
-                <span>{data?.result?.orderDeliveredCount || 0}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Orders Delivered</span>
+                <span className="font-semibold text-gray-900">
+                  {data?.result?.orderDeliveredCount || 0}
+                </span>
               </div>
             </div>
           </div>

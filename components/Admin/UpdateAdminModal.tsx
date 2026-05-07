@@ -42,7 +42,7 @@ const UpdateAdminModal = ({ adminId }: UpdateAdminModalProps) => {
 
   const [adminName, setAdminName] = useState("");
   const [role, setRole] = useState("");
-  const [phone, setPhone] = useState("966");
+  const [phone, setPhone] = useState("880");
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
