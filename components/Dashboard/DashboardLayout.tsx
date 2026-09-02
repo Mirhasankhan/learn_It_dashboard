@@ -1,4 +1,5 @@
 "use client";
+
 import { useSessionSummaryQuery, useSummaryQuery } from "@/redux/api/adminApi";
 import Overview from "./Overview";
 import { ServiceOverview } from "./ServiceOverview";
@@ -7,48 +8,72 @@ import { useState } from "react";
 import { WeeklyEarnings } from "./WeeklyEarnings";
 import WeeklySessionChart from "./WeeklySessionSummary";
 import MonthlySessionChart from "./MonthlySessionSummary";
+import AllTransactions from "./AllTransactions";
 
-const DashboardLayout = () => {
-  const [type, setType] = useState("monthly");
-  const [sessionType, setSessionType] = useState("monthly");
-  const { data } = useSummaryQuery(type);
-  const { data: sessionData } = useSessionSummaryQuery(sessionType);
+export default function DashboardLayout() {
+  const [type, setType] = useState<"monthly" | "weekly">("monthly");
+  const [sessionType, setSessionType] = useState<"monthly" | "weekly">("monthly");
+
+  const { data, isLoading, isFetching } = useSummaryQuery(type);
+  const {
+    data: sessionData,
+    isLoading: sessionLoading,
+    isFetching: sessionFetching,
+  } = useSessionSummaryQuery(sessionType);
 
   return (
-    <div>
-      <Overview></Overview>
-      <div className="grid grid-cols-3 mt-8 gap-8">
-        <div className="col-span-3 lg:col-span-2">
-          {type == "monthly" ? (
+    <div className="space-y-6 pb-8">
+      {/* Top Overview Cards */}
+      <Overview />
+
+      {/* Middle Row: Platform Earnings & Service Distribution */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          {type === "monthly" ? (
             <MonthlyEarnings
               setType={setType}
               chartData={data?.result?.chartData}
-            ></MonthlyEarnings>
+              isLoading={isLoading}
+              isFetching={isFetching}
+            />
           ) : (
             <WeeklyEarnings
               setType={setType}
               chartData={data?.result?.chartData}
-            ></WeeklyEarnings>
+              isLoading={isLoading}
+              isFetching={isFetching}
+            />
           )}
         </div>
-        <div className="col-span-3 lg:col-span-1">
-          <ServiceOverview></ServiceOverview>
+        <div className="lg:col-span-1">
+          <ServiceOverview />
         </div>
       </div>
-      <div className="grid grid-cols-2 mt-6 gap-6">
-        <div className="lg:col-span-1 col-span-2">
-          {sessionType == "monthly" ? (
-            <MonthlySessionChart monthlyData={sessionData?.result} setType={setSessionType}></MonthlySessionChart>
+
+      {/* Bottom Row: Session Performance & Recent Transactions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          {sessionType === "monthly" ? (
+            <MonthlySessionChart
+              monthlyData={sessionData?.result}
+              setType={setSessionType}
+              isLoading={sessionLoading}
+              isFetching={sessionFetching}
+            />
           ) : (
-            <WeeklySessionChart weeklyData={sessionData?.result} setType={setSessionType}></WeeklySessionChart>
+            <WeeklySessionChart
+              weeklyData={sessionData?.result}
+              setType={setSessionType}
+              isLoading={sessionLoading}
+              isFetching={sessionFetching}
+            />
           )}
         </div>
-        <div className="lg:col-span-1 col-span-2">
-          {/* <AllTransactions></AllTransactions> */}
+        <div>
+          <AllTransactions />
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default DashboardLayout;

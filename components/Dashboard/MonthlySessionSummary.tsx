@@ -1,93 +1,213 @@
 "use client";
+
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function MonthlySessionChart({ setType, monthlyData }: any) {
+interface Props {
+  setType: (val: "monthly" | "weekly") => void;
+  monthlyData?: Array<{
+    month: string;
+    completed: number;
+    active: number;
+    rejected: number;
+  }>;
+  isLoading?: boolean;
+  isFetching?: boolean;
+}
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-gray-900/95 backdrop-blur-md text-white px-3.5 py-3 rounded-xl shadow-xl border border-gray-800 text-xs min-w-[150px]">
+        <p className="font-semibold text-gray-300 pb-1.5 mb-1.5 border-b border-gray-800">{label}</p>
+        <div className="space-y-1.5">
+          {payload.map((item: any, i: number) => (
+            <div key={i} className="flex items-center justify-between gap-3">
+              <span className="flex items-center gap-1.5 capitalize text-gray-300">
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: item.color }}
+                />
+                {item.name}
+              </span>
+              <span className="font-bold text-white">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
+export default function MonthlySessionChart({
+  setType,
+  monthlyData = [],
+  isLoading,
+  isFetching,
+}: Props) {
+  const isBusy = isLoading || isFetching;
+
+  // Calculate totals
+  const totalCompleted = monthlyData.reduce((acc, curr) => acc + (Number(curr.completed) || 0), 0);
+  const totalActive = monthlyData.reduce((acc, curr) => acc + (Number(curr.active) || 0), 0);
+  const totalRejected = monthlyData.reduce((acc, curr) => acc + (Number(curr.rejected) || 0), 0);
+
   return (
-    <div className="w-full h-[450px] p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-xl font-semibold text-gray-800">Session Summary</h2>
-        <select
-          onChange={(e) => setType(e.target.value as "weekly" | "monthly")}
-          className="border px-4 py-1 text-gray-600 rounded-[6px]"
-        >
-          <option value="monthly">Monthly</option>
-          <option value="weekly">Weekly</option>
-        </select>
+    <div className="w-full bg-white rounded-2xl border border-gray-100/90 shadow-xs p-5 flex flex-col justify-between">
+      {/* Header with Title and Segmented Switch */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-50">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-gray-900">Session Summary</h2>
+            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+              Monthly
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">Sessions status progression over time</p>
+        </div>
+
+        <div className="flex items-center bg-gray-100/80 p-1 rounded-xl border border-gray-200/60 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setType("monthly")}
+            className="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 bg-white text-bprimary shadow-xs"
+          >
+            Monthly
+          </button>
+          <button
+            type="button"
+            onClick={() => setType("weekly")}
+            className="px-3.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900"
+          >
+            Weekly
+          </button>
+        </div>
       </div>
 
-      <ResponsiveContainer width="100%" height="80%">
-        <LineChart
-          data={monthlyData}
-          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-        >
-          <CartesianGrid
-            strokeDasharray="0"
-            vertical={true}
-            horizontal={false}
-            stroke="#F3F4F6"
-          />
-          <XAxis
-            dataKey="month"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "#9CA3AF", fontSize: 12 }}
-            dy={10}
-          />
-          <YAxis hide domain={["auto", "auto"]} />
-          <Tooltip
-            contentStyle={{
-              borderRadius: "10px",
-              border: "none",
-              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-            }}
-          />
-          <Legend
-            verticalAlign="bottom"
-            align="center"
-            iconType="circle"
-            wrapperStyle={{ paddingTop: "20px" }}
-          />
+      {/* Legend Indicators with counts */}
+      <div className="flex flex-wrap items-center gap-3 pt-3 pb-2 text-xs">
+        <div className="flex items-center gap-1.5 bg-emerald-50/60 px-2.5 py-1 rounded-lg border border-emerald-100/60">
+          <span className="w-2 h-2 rounded-full bg-[#10B981]" />
+          <span className="text-gray-600 font-medium">Completed:</span>
+          <span className="font-bold text-emerald-700">{totalCompleted}</span>
+        </div>
+        <div className="flex items-center gap-1.5 bg-blue-50/60 px-2.5 py-1 rounded-lg border border-blue-100/60">
+          <span className="w-2 h-2 rounded-full bg-[#3B82F6]" />
+          <span className="text-gray-600 font-medium">Active:</span>
+          <span className="font-bold text-blue-700">{totalActive}</span>
+        </div>
+        <div className="flex items-center gap-1.5 bg-rose-50/60 px-2.5 py-1 rounded-lg border border-rose-100/60">
+          <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
+          <span className="text-gray-600 font-medium">Rejected:</span>
+          <span className="font-bold text-rose-700">{totalRejected}</span>
+        </div>
+      </div>
 
-          {/* Completed - Green */}
-          <Line
-            type="monotone"
-            dataKey="completed"
-            stroke="#22C55E"
-            strokeWidth={3}
-            dot={false}
-            activeDot={{ r: 6 }}
-          />
+      {/* Chart Canvas */}
+      <div className="h-[280px] w-full pt-2">
+        {isBusy ? (
+          <div className="h-full w-full flex flex-col justify-end gap-3 pb-2">
+            <div className="flex items-end justify-between gap-3 h-[220px] px-2">
+              {[40, 60, 80, 50, 70, 90, 65, 85, 45, 75, 95, 60].map((height, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+                  <Skeleton
+                    className="w-full rounded-md"
+                    style={{ height: `${height}%` }}
+                  />
+                  <Skeleton className="h-2.5 w-6 rounded-sm" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : monthlyData.length === 0 ? (
+          <div className="h-full w-full flex items-center justify-center text-gray-400 text-sm">
+            No session data recorded yet
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={monthlyData}
+              margin={{ top: 10, right: 10, bottom: 0, left: -25 }}
+            >
+              <defs>
+                <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#10B981" stopOpacity={0.0} />
+                </linearGradient>
+                <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.0} />
+                </linearGradient>
+                <linearGradient id="colorRejected" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0.0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#F1F5F9"
+              />
+              <XAxis
+                dataKey="month"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#64748B", fontSize: 12 }}
+                tickMargin={10}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#94A3B8", fontSize: 11 }}
+                tickMargin={10}
+                allowDecimals={false}
+              />
+              <Tooltip content={<CustomTooltip />} />
 
-          {/* Active - Blue */}
-          <Line
-            type="monotone"
-            dataKey="active"
-            stroke="#3B82F6"
-            strokeWidth={3}
-            dot={false}
-            activeDot={{ r: 6 }}
-          />
-
-          {/* Rejected - Red */}
-          <Line
-            type="monotone"
-            dataKey="rejected"
-            stroke="#EF4444"
-            strokeWidth={3}
-            dot={false}
-            activeDot={{ r: 6 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+              <Area
+                type="monotone"
+                dataKey="completed"
+                name="completed"
+                stroke="#10B981"
+                strokeWidth={2.5}
+                fillOpacity={1}
+                fill="url(#colorCompleted)"
+                activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff" }}
+              />
+              <Area
+                type="monotone"
+                dataKey="active"
+                name="active"
+                stroke="#3B82F6"
+                strokeWidth={2.5}
+                fillOpacity={1}
+                fill="url(#colorActive)"
+                activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff" }}
+              />
+              <Area
+                type="monotone"
+                dataKey="rejected"
+                name="rejected"
+                stroke="#EF4444"
+                strokeWidth={2.5}
+                fillOpacity={1}
+                fill="url(#colorRejected)"
+                activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff" }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+      </div>
     </div>
   );
 }
+
